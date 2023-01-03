@@ -83,9 +83,11 @@ while True:
         # Convert to 16 bits image
         i2 = i.astype(np.uint16)
         if not options.dark:
-          cv2.normalize(i2,i,0,65535,cv2.NORM_MINMAX)
+          # Dark subtraction
           if dark_loaded:
             i=i-dark_i
+          # Normalization
+          cv2.normalize(i2,i,0,65535,cv2.NORM_MINMAX)
 
         # Init
         if init == 0:
