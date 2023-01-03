@@ -12,6 +12,9 @@ stream = urllib.request.urlopen('http://192.168.1.204:81/stream')
 # Window name
 window_name = "BMSO Allsky Cam"
 
+# Default dark path
+default_dark_path = os.environ.get('HOME')+"/.bmso_allsky_dark.npy"
+
 # Options parsing
 parser = OptionParser()
 parser.add_option("-u", "--url",
@@ -21,7 +24,7 @@ parser.add_option("-c", "--create_dark", action="store_true",
                   dest="dark",
                   help="Create a master dark stacking n_darks dark frames. Don't forget to cover the lens!")
 parser.add_option("-d", "--dark",
-                  dest="dark_path", default="/tmp/bmso_allsky_dark.npy",
+                  dest="dark_path", default=default_dark_path,
                   help="Path of the dark image")
 parser.add_option("-n", "--n_darks",
                   dest="n_darks", default="20",
@@ -90,6 +93,9 @@ while True:
             height=i.shape[0]
             print("Frame size: "+str(width)+"x"+str(height))
             cv2.resizeWindow(window_name, width, height)
+            img = np.zeros((height, width, 3), dtype = np.uint8)
+            cv2.putText(img, "Stacking. Please, wait...", (100,100), font, 3, (0, 0, 255), 4, cv2.LINE_AA)
+            cv2.imshow(window_name, img)
             init=1
 
         # Stacking 
