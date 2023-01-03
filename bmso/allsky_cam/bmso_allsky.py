@@ -8,6 +8,9 @@ from os import path
 # Default camera stream url
 stream = urllib.request.urlopen('http://192.168.1.204:81/stream')
 
+# Window name
+window_name = "BMSO Allsky Cam"
+
 # Options parsing
 parser = OptionParser()
 parser.add_option("-u", "--url",
@@ -45,6 +48,11 @@ if path.exists(options.dark_path) and not options.dark:
 if options.dark:
   print ("Don't forget to cover the camera for dark creation!")
   print ("Creating master dark...")
+else:
+  cv2.namedWindow(window_name,cv2.WINDOW_NORMAL)
+  font = cv2.FONT_HERSHEY_SIMPLEX
+
+init=0
 
 # Main
 bytes = bytes()
@@ -65,6 +73,14 @@ while True:
         i2 = i.astype(np.uint16)
         cv2.normalize(i2,i,0,65535,cv2.NORM_MINMAX)
 
+        # Init
+        if init == 0:
+            width=i.shape[1]
+            height=i.shape[0]
+            print("Frame size: "+str(width)+"x"+str(height))
+            cv2.resizeWindow(window_name, width, height)
+            init=1
+
         # Stacking 
         if options.dark:
             if f == 1:
@@ -84,8 +100,10 @@ while True:
                 # Convert back to 8 bits and display
                 stacked_8bits=stacked_i
                 cv2.normalize(stacked_i,stacked_8bits,0,255,cv2.NORM_MINMAX)
+                # Add OSD
+                cv2.putText(stacked_8bits, window_name, (10,height-10), font, 2, (0, 0, 255), 4, cv2.LINE_AA)
                 print("Displaying...")
-                cv2.imshow('BMSO Allsky', stacked_8bits.astype(np.uint8))
+                cv2.imshow(window_name, stacked_8bits.astype(np.uint8))
         if cv2.waitKey(1) == 27 or (options.dark == True and f==n_dark_frames):
             if options.dark:
                 #master_dark = master_dark.astype(np.uint16)
@@ -93,3 +111,5 @@ while True:
                 np.save(options.dark_path,master_dark)
                 print ("Master dark saved in "+options.dark_path)
             exit(0)
+        #if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) <1 :
+        #    exit(0)
