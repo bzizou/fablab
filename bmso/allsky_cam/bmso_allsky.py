@@ -3,7 +3,8 @@ import cv2
 import urllib.request
 import numpy as np
 from optparse import OptionParser
-from os import path
+import os
+from datetime import datetime
 
 # Default camera stream url
 stream = urllib.request.urlopen('http://192.168.1.204:81/stream')
@@ -28,6 +29,9 @@ parser.add_option("-n", "--n_darks",
 parser.add_option("-s", "--stack_size",
                   dest="stack_size", default="20",
                   help="Number of frames to stack")
+parser.add_option("-S", "--store",
+                  dest="store", default="",
+                  help="Record and store the stacked pictures into the provide directory")
 
 (options, args) = parser.parse_args()
 
@@ -39,7 +43,7 @@ stack_size = int(options.stack_size)
 
 # Load dark master if exists
 dark_loaded=False
-if path.exists(options.dark_path) and not options.dark:
+if os.path.exists(options.dark_path) and not options.dark:
   print("Loading master dark "+options.dark_path)
   #dark_i=cv2.imread(options.dark_path,-1)
   #dark_i = dark_i.astype(np.uint16)
@@ -53,6 +57,10 @@ else:
   font = cv2.FONT_HERSHEY_SIMPLEX
 
 init=0
+
+# Initiate the store directory
+if options.store != "" and not os.path.exists(options.store):
+    os.mkdir(options.store)
 
 # Main
 bytes = bytes()
@@ -101,9 +109,17 @@ while True:
                 stacked_8bits=stacked_i
                 cv2.normalize(stacked_i,stacked_8bits,0,255,cv2.NORM_MINMAX)
                 # Add OSD
-                cv2.putText(stacked_8bits, window_name, (10,height-10), font, 2, (0, 0, 255), 4, cv2.LINE_AA)
+                cv2.putText(stacked_8bits, window_name, (10,height-10), font, 1, (0, 0, 255), 4, cv2.LINE_AA)
+                # Outputs
+                if options.store != "":
+                    d=datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+                    filename=options.store+"/"+window_name+"-"+d+".jpg"
+                    print("Saving frame to "+filename)
+                    cv2.imwrite(filename, stacked_8bits.astype(np.uint8))
                 print("Displaying...")
                 cv2.imshow(window_name, stacked_8bits.astype(np.uint8))
+
+
         if cv2.waitKey(1) == 27 or (options.dark == True and f==n_dark_frames):
             if options.dark:
                 #master_dark = master_dark.astype(np.uint16)
