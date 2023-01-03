@@ -79,7 +79,10 @@ while True:
 
         # Convert to 16 bits image
         i2 = i.astype(np.uint16)
-        cv2.normalize(i2,i,0,65535,cv2.NORM_MINMAX)
+        if not options.dark:
+          cv2.normalize(i2,i,0,65535,cv2.NORM_MINMAX)
+          if dark_loaded:
+            i=i-dark_i
 
         # Init
         if init == 0:
@@ -97,8 +100,6 @@ while True:
               master_dark+=i/n_dark_frames
         else:
             print("Stacking...")
-            if dark_loaded:
-                i=i-dark_i
             if f == 1:
               stacked_i=i/stack_size
             else:
@@ -109,10 +110,11 @@ while True:
                 stacked_8bits=stacked_i
                 cv2.normalize(stacked_i,stacked_8bits,0,255,cv2.NORM_MINMAX)
                 # Add OSD
-                cv2.putText(stacked_8bits, window_name, (10,height-10), font, 1, (0, 0, 255), 4, cv2.LINE_AA)
+                d=datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+                cv2.putText(stacked_8bits, window_name, (10,height-60), font, 1, (0, 0, 255), 4, cv2.LINE_AA)
+                cv2.putText(stacked_8bits, d, (10,height-15), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
                 # Outputs
                 if options.store != "":
-                    d=datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
                     filename=options.store+"/"+window_name+"-"+d+".jpg"
                     print("Saving frame to "+filename)
                     cv2.imwrite(filename, stacked_8bits.astype(np.uint8))
@@ -127,5 +129,5 @@ while True:
                 np.save(options.dark_path,master_dark)
                 print ("Master dark saved in "+options.dark_path)
             exit(0)
-        #if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) <1 :
-        #    exit(0)
+        if not options.dark and cv2.getWindowProperty(window_name, cv2.WND_PROP_AUTOSIZE) < 0 :
+            exit(0)
