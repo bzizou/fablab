@@ -92,10 +92,11 @@ while True:
             width=i.shape[1]
             height=i.shape[0]
             print("Frame size: "+str(width)+"x"+str(height))
-            cv2.resizeWindow(window_name, width, height)
-            img = np.zeros((height, width, 3), dtype = np.uint8)
-            cv2.putText(img, "Stacking. Please, wait...", (100,100), font, 3, (0, 0, 255), 4, cv2.LINE_AA)
-            cv2.imshow(window_name, img)
+            if not options.dark:
+              cv2.resizeWindow(window_name, width, height)
+              img = np.zeros((height, width, 3), dtype = np.uint8)
+              cv2.putText(img, "Stacking. Please, wait...", (100,100), font, 3, (0, 0, 255), 4, cv2.LINE_AA)
+              cv2.imshow(window_name, img)
             init=1
 
         # Stacking 
