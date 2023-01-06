@@ -32,6 +32,9 @@ parser.add_option("-n", "--n_darks",
 parser.add_option("-s", "--stack_size",
                   dest="stack_size", default="20",
                   help="Number of frames to stack")
+parser.add_option("-o", "--overstack",
+                  dest="overstack", action="store_true",
+                  help="Double the signal strenght by stacking two average-stacked frames")
 parser.add_option("-S", "--store",
                   dest="store", default="",
                   help="Record and store the stacked pictures into the provide directory")
@@ -68,6 +71,7 @@ if options.store != "" and not os.path.exists(options.store):
 # Main
 bytes = bytes()
 f=0
+previous = False
 while True:
     bytes += stream.read(1024)
     a = bytes.find(b'\xff\xd8')
@@ -116,6 +120,15 @@ while True:
             if f==stack_size:
                 f=0
                 # Convert back to 8 bits and display
+                if options.overstack:
+                  if previous:
+                     print("Overstacking")
+                     i=stacked_i
+                     stacked_i=stacked_i+previous_stacked_i
+                     previous_stacked_i=i
+                  else:
+                     previous_stacked_i=stacked_i
+                     previous = True
                 stacked_8bits=stacked_i
                 cv2.normalize(stacked_i,stacked_8bits,0,255,cv2.NORM_MINMAX)
                 # Add OSD
