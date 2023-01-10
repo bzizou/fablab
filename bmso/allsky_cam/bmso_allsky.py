@@ -6,8 +6,6 @@ from optparse import OptionParser
 import os
 from datetime import datetime
 
-# Default camera stream url
-stream = urllib.request.urlopen('http://192.168.1.204:81/stream')
 
 # Window name
 window_name = "BMSO Allsky Cam"
@@ -38,12 +36,23 @@ parser.add_option("-o", "--overstack",
 parser.add_option("-S", "--store",
                   dest="store", default="",
                   help="Record and store the stacked pictures into the provide directory")
+parser.add_option("-R", "--red",
+                  dest="red", default="",
+                  help="Value for Red balance (-255 to 255)")
+parser.add_option("-G", "--green",
+                  dest="green", default="",
+                  help="Value for Green balance (-255 to 255)")
+parser.add_option("-B", "--blue",
+                  dest="blue", default="",
+                  help="Value for Blue balance (-255 to 255)")
 
 (options, args) = parser.parse_args()
 
-
-if options.url != "":
+if options.url != "" :
   stream = urllib.request.urlopen(options.url)
+else:
+  # default stream url
+  stream = urllib.request.urlopen('http://192.168.1.204:81/stream')
 n_dark_frames = int(options.n_darks)
 stack_size = int(options.stack_size)
 
@@ -129,6 +138,12 @@ while True:
                   else:
                      previous_stacked_i=stacked_i
                      previous = True
+                if options.red:
+                    stacked_i[...,2]=cv2.add(stacked_i[...,2],int(options.red))
+                if options.green:
+                    stacked_i[...,1]=cv2.add(stacked_i[...,1],int(options.green))
+                if options.blue:
+                    stacked_i[...,0]=cv2.add(stacked_i[...,0],int(options.blue))
                 stacked_8bits=stacked_i
                 cv2.normalize(stacked_i,stacked_8bits,0,255,cv2.NORM_MINMAX)
                 # Add OSD
