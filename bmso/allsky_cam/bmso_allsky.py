@@ -52,7 +52,7 @@ if options.url != "" :
   stream = urllib.request.urlopen(options.url)
 else:
   # default stream url
-  stream = urllib.request.urlopen('http://192.168.1.204:81/stream')
+  stream = urllib.request.urlopen('http://192.168.1.205:81/stream')
 n_dark_frames = int(options.n_darks)
 stack_size = int(options.stack_size)
 
