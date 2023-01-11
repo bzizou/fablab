@@ -5,7 +5,7 @@ import numpy as np
 from optparse import OptionParser
 import os
 from datetime import datetime
-
+import json
 
 # Window name
 window_name = "BMSO Allsky Cam"
@@ -45,6 +45,9 @@ parser.add_option("-G", "--green",
 parser.add_option("-B", "--blue",
                   dest="blue", default="",
                   help="Value for Blue balance (-255 to 255)")
+parser.add_option("-t", "--sensor_url",
+                  dest="sensor_url", default="",
+                  help="Get temperature from sensor (only bmp280 supported)")
 
 (options, args) = parser.parse_args()
 
@@ -146,10 +149,21 @@ while True:
                     stacked_i[...,0]=cv2.add(stacked_i[...,0],int(options.blue))
                 stacked_8bits=stacked_i
                 cv2.normalize(stacked_i,stacked_8bits,0,255,cv2.NORM_MINMAX)
+                # Get temperature
+                if options.sensor_url != "":
+                  r = urllib.request.urlopen(options.sensor_url)
+                  sensor=json.loads(r.read())
+                  temp=str(sensor['StatusSNS']['BMP280']['Temperature'])
+                  temp_unit=sensor['StatusSNS']['TempUnit']
+                  pressure=str(sensor['StatusSNS']['BMP280']['Pressure'])
+                  pressure_unit=sensor['StatusSNS']['PressureUnit']
+                  sensor_string=temp+" "+temp_unit+"  "+pressure+" "+pressure_unit
                 # Add OSD
                 d=datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
                 cv2.putText(stacked_8bits, window_name, (10,height-60), font, 1, (0, 0, 255), 4, cv2.LINE_AA)
                 cv2.putText(stacked_8bits, d, (10,height-15), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                if options.sensor_url != "":
+                  cv2.putText(stacked_8bits, sensor_string, (width-400,height-15), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
                 # Outputs
                 if options.store != "":
                     filename=options.store+"/"+window_name+"-"+d+".jpg"
