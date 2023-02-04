@@ -188,7 +188,7 @@ void TuneCamera()
     s->set_aec2(s, 0);
     s->set_aec_value(s, 1200);   // Exposure to max
     s->set_gain_ctrl(s, 0);      // Disable auto gain control
-    s->set_agc_gain(s, 30);       // Set gain to maximum
+    s->set_agc_gain(s, 1);       // Set gain (0 to 30)
     s->set_bpc(s, 1);            // Correct black pixels
     s->set_wpc(s, 1);            // Correct white pixels
     s->set_lenc(s, 1);           // Lens correction
@@ -199,15 +199,12 @@ void TuneCamera()
     //s->set_reg(s,0x111,0x3f,0x01); // Set clock divider
     //s->set_reg(s,0x10f,0xff,0x4b); // Reserved
     //s->set_reg(s,0x103,0xff,0xcf); // 7 dummy frames 
-    //s->set_reg(s,0x145,0x3f,0x3f); // Long exposure
+    s->set_reg(s,0x145,0x3f,0x3f); // Long exposure
     //s->set_reg(s,0x143,0xff,0x40); //magic value to give us the frame faster (bit 6 must be 1)
-    
-    s->set_reg(s,0x113,0xff,0);    //manual everything
-    s->set_reg(s,0x10c,0x6,0x8);    //manual banding
     
     s->set_reg(s,0x13d,0xff,0x34);//changes the exposure somehow, has to do with frame rate
     
-    s->set_reg(s,0x147,0xff,0x40);//Frame Length Adjustment MSBs
+    s->set_reg(s,0x147,0xff,0x20);//Frame Length Adjustment MSBs (set to 0x40 for max)
     s->set_reg(s,0x12a,0xf0,0xf0);//line adjust MSB
     s->set_reg(s,0x12b,0xff,0xff);//line adjust
       
