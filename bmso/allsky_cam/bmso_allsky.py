@@ -55,7 +55,7 @@ if options.url != "" :
   stream = urllib.request.urlopen(options.url)
 else:
   # default stream url
-  stream = urllib.request.urlopen('http://192.168.1.205:81/stream')
+  stream = urllib.request.urlopen('http://192.168.1.205:80')
 n_dark_frames = int(options.n_darks)
 stack_size = int(options.stack_size)
 
@@ -118,13 +118,13 @@ while True:
             init=1
 
         # Stacking 
+        print("Stacking...")
         if options.dark:
             if f == 1:
                 master_dark=i/n_dark_frames
             else:
               master_dark+=i/n_dark_frames
         else:
-            print("Stacking...")
             if f == 1:
               stacked_i=i/stack_size
             else:
