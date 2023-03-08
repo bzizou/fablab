@@ -188,7 +188,7 @@ void TuneCamera()
     s->set_aec2(s, 0);
     s->set_aec_value(s, 1200);   // Exposure to max
     s->set_gain_ctrl(s, 0);      // Disable auto gain control
-    s->set_agc_gain(s, 1);       // Set gain (0 to 30)
+    s->set_agc_gain(s, 8);       // Set gain (0 to 30)
     s->set_bpc(s, 1);            // Correct black pixels
     s->set_wpc(s, 1);            // Correct white pixels
     s->set_lenc(s, 1);           // Lens correction
