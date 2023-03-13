@@ -10,8 +10,9 @@ import json
 # Window name
 window_name = "BMSO Allsky Cam"
 
-# Default dark path
+# Default paths
 default_dark_path = os.environ.get('HOME')+"/.bmso_allsky_dark.npy"
+default_flat_path = os.environ.get('HOME')+"/.bmso_allsky_flat.jpg"
 
 # Options parsing
 parser = OptionParser()
@@ -24,6 +25,9 @@ parser.add_option("-c", "--create_dark", action="store_true",
 parser.add_option("-d", "--dark",
                   dest="dark_path", default=default_dark_path,
                   help="Path of the dark image")
+parser.add_option("-f", "--flat",
+                  dest="flat_path", default=default_flat_path,
+                  help="Path of the flat image")
 parser.add_option("-n", "--n_darks",
                   dest="n_darks", default="20",
                   help="Number of dark frames to stack")
@@ -59,7 +63,7 @@ else:
 n_dark_frames = int(options.n_darks)
 stack_size = int(options.stack_size)
 
-# Load dark master if exists
+# Load master dark if exists
 dark_loaded=False
 if os.path.exists(options.dark_path) and not options.dark:
   print("Loading master dark "+options.dark_path)
@@ -73,6 +77,15 @@ if options.dark:
 else:
   cv2.namedWindow(window_name,cv2.WINDOW_NORMAL)
   font = cv2.FONT_HERSHEY_SIMPLEX
+
+# Load master flat if exists
+flat_loaded=False
+if os.path.exists(options.flat_path) and not options.dark:
+  print("Loading master flat "+options.flat_path)
+  flat_i = cv2.imread(options.flat_path,-1)
+  flat_i = flat_i.astype(np.uint16)
+  flat_i=flat_i
+  flat_loaded=True
 
 init=0
 
@@ -141,12 +154,16 @@ while True:
                   else:
                      previous_stacked_i=stacked_i
                      previous = True
+                # RGB adjust
                 if options.red:
                     stacked_i[...,2]=cv2.add(stacked_i[...,2],int(options.red))
                 if options.green:
                     stacked_i[...,1]=cv2.add(stacked_i[...,1],int(options.green))
                 if options.blue:
                     stacked_i[...,0]=cv2.add(stacked_i[...,0],int(options.blue))
+                # Flat field correction
+                if flat_loaded:
+                   stacked_i=stacked_i/flat_i
                 stacked_8bits=stacked_i
                 cv2.normalize(stacked_i,stacked_8bits,0,255,cv2.NORM_MINMAX)
                 # Get temperature
