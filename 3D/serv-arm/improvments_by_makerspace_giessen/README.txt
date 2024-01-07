@@ -1,0 +1,1 @@
+Serv-Arm improved for easier assembly by makerspace_giessen on Thingiverse: https://www.thingiverse.com/thing:4129440
