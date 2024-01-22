@@ -13,7 +13,9 @@ do
   if [ "$file" \!= "" ]
   then
     echo "Getting file $TELESCOPE_HOST:$file ..."
-    scp $TELESCOPE_HOST:$file $INCOMING_DIR
+    scp $TELESCOPE_HOST:$file /tmp
+    f=`basename $file`
+    mv /tmp/$f $INCOMING_DIR
   else
     sleep 2
   fi
