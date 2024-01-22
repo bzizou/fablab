@@ -12,8 +12,9 @@ do
   file=`ssh $TELESCOPE_HOST inotifywait -q -e create -r $WATCH_DIR --format "%w%f"`
   if [ "$file" \!= "" ]
   then
-	  echo "Getting file $TELESCOPE_HOST:$file ..."
-	  scp $TELESCOPE_HOST:$file $INCOMING_DIR
+    echo "Getting file $TELESCOPE_HOST:$file ..."
+    scp $TELESCOPE_HOST:$file $INCOMING_DIR
+  else
+    sleep 2
   fi
-  sleep 2
 done
