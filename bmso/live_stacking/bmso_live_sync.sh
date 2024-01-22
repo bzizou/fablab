@@ -2,7 +2,7 @@
 
 TELESCOPE_HOST=buzz
 WATCH_DIR=/home/bzizou/Pictures
-INCOMING_DIR=/home/bzizou/BMSO/live/incoming
+INCOMING_DIR=/home/bzizou/BMSO/live/incomming/
 
 echo "Watching $TELESCOPE_HOST:$WATCH_DIR"
 echo "Incoming directory: $INCOMING_DIR"
