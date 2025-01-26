@@ -20,9 +20,11 @@ WebServer server(80);
 
 MD_Parola myDisplay = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 String string_text="ESP32";
+String previousText=string_text;
 int Speed=100;
 int Brightness=0;
 int Mode=1;
+int previousMode=Mode;
 
 String urlDecode(String encoded) {
     char decoded[encoded.length() * 2]; // Tableau pour stocker la chaîne décodée
@@ -107,7 +109,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     <br>
     Text:
     <form id="matrixForm">
-        <input type="text" id="textInput" name="text" placeholder="Entrez votre texte (max 40 caractères)" maxlength="40">
+        <input type="text" id="textInput" name="text" placeholder="Entrez votre texte">
         <button type="submit">Envoyer</button>
     </form>
     <br>
@@ -133,11 +135,6 @@ const char index_html[] PROGMEM = R"rawliteral(
             e.preventDefault();
             // Récupération du texte
             const text = document.getElementById('textInput').value;
-            // Validation de la longueur
-            if (text.length > 40 || text.trim() === '') {
-                alert("Veuillez entrer un texte entre 1 et 40 caractères");
-                return;
-            }
             // Construction de l'URL
             const url = `/text/${encodeURIComponent(text)}`;
             // Appel GET à l'API
@@ -339,7 +336,7 @@ void loop() {
   server.handleClient();
   myDisplay.setIntensity(Brightness);
   myDisplay.setSpeed(Speed);
-  if (myDisplay.displayAnimate()) {
+  if (myDisplay.displayAnimate() || previousMode != Mode || previousText != string_text) {
     myDisplay.setIntensity(Brightness);
     myDisplay.displayReset();
     const char *text = string_text.c_str();
@@ -425,4 +422,6 @@ void loop() {
         break;
     }
   }
+  previousMode=Mode;
+  previousText=string_text;
 }
