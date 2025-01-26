@@ -346,75 +346,99 @@ void loop() {
         myDisplay.print(text);
         break;
       case 1:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_LEFT, Speed);
         break;
       case 2:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_RIGHT, Speed);
         break;
       case 3:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_UP, Speed);
         break;
       case 4:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_DOWN, Speed);
         break;
       case 5:
+        myDisplay.setPause(800);
         myDisplay.displayScroll(text, PA_CENTER, PA_FADE, Speed);
         break;
       case 6:
+        myDisplay.setPause(800);
         myDisplay.displayScroll(text, PA_CENTER, PA_SLICE, Speed);
         break;
       case 7:
+        myDisplay.setPause(800);
         myDisplay.displayScroll(text, PA_CENTER, PA_MESH, Speed);
         break;
       case 8:
+        myDisplay.setPause(800);
         myDisplay.displayScroll(text, PA_CENTER, PA_DISSOLVE, Speed);
         break;
       case 9:
+        myDisplay.setPause(800);
         myDisplay.displayScroll(text, PA_CENTER, PA_BLINDS, Speed);
         break;
       case 10:
+        myDisplay.setPause(800);
         myDisplay.displayScroll(text, PA_CENTER, PA_RANDOM, Speed);
         break;
       case 11:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_WIPE, Speed);
         break;
       case 12:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_WIPE_CURSOR, Speed);
         break;
       case 13:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCAN_HORIZ, Speed);
         break;
       case 14:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCAN_HORIZX, Speed);
         break;
       case 15:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCAN_VERT, Speed);
         break;
       case 16:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCAN_VERTX, Speed);
         break;
       case 17:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_OPENING, Speed);
         break;
       case 18:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_OPENING_CURSOR, Speed);
         break;
       case 19:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_UP_LEFT, Speed);
         break;
       case 20:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_UP_RIGHT, Speed);
         break;
       case 21:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_DOWN_LEFT, Speed);
         break;
       case 22:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_DOWN_RIGHT, Speed);
         break;
       case 23:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_GROW_UP, Speed);
         break;
       case 24:
+        myDisplay.setPause(Speed);
         myDisplay.displayScroll(text, PA_CENTER, PA_GROW_DOWN, Speed);
         break;
       default:
