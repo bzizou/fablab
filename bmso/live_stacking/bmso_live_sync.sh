@@ -2,10 +2,13 @@
 
 TELESCOPE_HOST=buzz
 WATCH_DIR=/home/bzizou/Pictures
-INCOMING_DIR=/home/bzizou/BMSO/live/incomming/
+INCOMING_DIR=/home/bzizou/BMSO/live/incomming
+
+
+echo "Clearing directory: $INCOMING_DIR"
+mv $INCOMING_DIR/* $INCOMING_DIR.save/
 
 echo "Watching $TELESCOPE_HOST:$WATCH_DIR"
-echo "Incoming directory: $INCOMING_DIR"
 
 while [ 1 ]
 do
@@ -15,7 +18,7 @@ do
     echo "Getting file $TELESCOPE_HOST:$file ..."
     scp $TELESCOPE_HOST:$file /tmp
     f=`basename $file`
-    mv /tmp/$f $INCOMING_DIR
+    mv /tmp/$f $INCOMING_DIR/
   else
     sleep 2
   fi
