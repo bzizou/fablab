@@ -337,6 +337,8 @@ void setup() {
 
 void loop() {
   server.handleClient();
+  myDisplay.setIntensity(Brightness);
+  myDisplay.setSpeed(Speed);
   if (myDisplay.displayAnimate()) {
     myDisplay.setIntensity(Brightness);
     myDisplay.displayReset();
@@ -381,6 +383,42 @@ void loop() {
         break;
       case 12:
         myDisplay.displayScroll(text, PA_CENTER, PA_WIPE_CURSOR, Speed);
+        break;
+      case 13:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCAN_HORIZ, Speed);
+        break;
+      case 14:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCAN_HORIZX, Speed);
+        break;
+      case 15:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCAN_VERT, Speed);
+        break;
+      case 16:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCAN_VERTX, Speed);
+        break;
+      case 17:
+        myDisplay.displayScroll(text, PA_CENTER, PA_OPENING, Speed);
+        break;
+      case 18:
+        myDisplay.displayScroll(text, PA_CENTER, PA_OPENING_CURSOR, Speed);
+        break;
+      case 19:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_UP_LEFT, Speed);
+        break;
+      case 20:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_UP_RIGHT, Speed);
+        break;
+      case 21:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_DOWN_LEFT, Speed);
+        break;
+      case 22:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_DOWN_RIGHT, Speed);
+        break;
+      case 23:
+        myDisplay.displayScroll(text, PA_CENTER, PA_GROW_UP, Speed);
+        break;
+      case 24:
+        myDisplay.displayScroll(text, PA_CENTER, PA_GROW_DOWN, Speed);
         break;
       default:
         myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_LEFT, Speed);
