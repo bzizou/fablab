@@ -22,7 +22,7 @@ MD_Parola myDisplay = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DE
 String string_text="ESP32";
 int Speed=100;
 int Brightness=0;
-
+int Mode=1;
 
 String urlDecode(String encoded) {
     char decoded[encoded.length() * 2]; // Tableau pour stocker la chaîne décodée
@@ -122,6 +122,11 @@ const char index_html[] PROGMEM = R"rawliteral(
         <input type="text" id="textBrightness" name="brightness" placeholder="0" maxlength="2">
         <button type="submit">Envoyer</button>
     </form>
+    Mode:
+    <form id="modeForm">
+        <input type="text" id="textMode" name="mode" placeholder="0" maxlength="2">
+        <button type="submit">Envoyer</button>
+    </form>
 
     <script>
         document.getElementById('matrixForm').addEventListener('submit', function(e) {
@@ -212,6 +217,32 @@ const char index_html[] PROGMEM = R"rawliteral(
             });
         });
 
+
+        document.getElementById('modeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const mode = document.getElementById('textMode').value;
+            const url = `/mode/${mode}`;
+            fetch(url, {
+                method: 'GET'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Erreur serveur');
+                }
+            })
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `<strong>Réponse de l'API:</strong> ${data}`;
+                setTimeout(() => {
+                    resultDiv.innerHTML = '';
+                }, 3000);
+            })
+            .catch(error => {
+                alert("Erreur lors de la communication avec l'API: " + error.message);
+            });
+        });
         // Initialisation du focus sur le champ de saisie
         document.getElementById('textInput').focus();
     </script>
@@ -289,6 +320,12 @@ void setup() {
     server.send(200, "text/plain", "Brightness: "+ server.pathArg(0));
   });
 
+  // Mode
+  server.on(UriBraces("/mode/{}"), []() {
+    Mode = server.pathArg(0).toInt();
+    server.send(200, "text/plain", "Mode: "+ server.pathArg(0));
+  });
+
   server.begin();
   Serial.println("HTTP server started");
 
@@ -304,6 +341,50 @@ void loop() {
     myDisplay.setIntensity(Brightness);
     myDisplay.displayReset();
     const char *text = string_text.c_str();
-    myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_LEFT, Speed);
+    switch (Mode) {
+      case 0:
+        myDisplay.setTextAlignment(PA_CENTER);
+        myDisplay.print(text);
+        break;
+      case 1:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_LEFT, Speed);
+        break;
+      case 2:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_RIGHT, Speed);
+        break;
+      case 3:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_UP, Speed);
+        break;
+      case 4:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_DOWN, Speed);
+        break;
+      case 5:
+        myDisplay.displayScroll(text, PA_CENTER, PA_FADE, Speed);
+        break;
+      case 6:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SLICE, Speed);
+        break;
+      case 7:
+        myDisplay.displayScroll(text, PA_CENTER, PA_MESH, Speed);
+        break;
+      case 8:
+        myDisplay.displayScroll(text, PA_CENTER, PA_DISSOLVE, Speed);
+        break;
+      case 9:
+        myDisplay.displayScroll(text, PA_CENTER, PA_BLINDS, Speed);
+        break;
+      case 10:
+        myDisplay.displayScroll(text, PA_CENTER, PA_RANDOM, Speed);
+        break;
+      case 11:
+        myDisplay.displayScroll(text, PA_CENTER, PA_WIPE, Speed);
+        break;
+      case 12:
+        myDisplay.displayScroll(text, PA_CENTER, PA_WIPE_CURSOR, Speed);
+        break;
+      default:
+        myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_LEFT, Speed);
+        break;
+    }
   }
 }
