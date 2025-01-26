@@ -11,19 +11,18 @@ const char* password = "hh6CTA51Jnb2JGwmJX";  //Enter Password here
 
 WebServer server(80);
 
-// Uncomment according to your hardware type
 #define HARDWARE_TYPE MD_MAX72XX::FC16_HW
 //define HARDWARE_TYPE MD_MAX72XX::GENERIC_HW
-
-// Defining size, and output pins
 #define MAX_DEVICES 16
 #define CS_PIN 15
 #define CLK_PIN 14
 #define DATA_PIN 2
 
 MD_Parola myDisplay = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
-#define  BUF_SIZE  75
 String string_text="ESP32";
+int Speed=100;
+int Brightness=0;
+
 
 String urlDecode(String encoded) {
     char decoded[encoded.length() * 2]; // Tableau pour stocker la chaîne décodée
@@ -104,28 +103,38 @@ const char index_html[] PROGMEM = R"rawliteral(
 </head>
 <body>
     <h1>Bzizou Led Matrix</h1>
+    <div id="result"></div>
+    <br>
+    Text:
     <form id="matrixForm">
         <input type="text" id="textInput" name="text" placeholder="Entrez votre texte (max 40 caractères)" maxlength="40">
         <button type="submit">Envoyer</button>
     </form>
-    <div id="result"></div>
+    <br>
+    Speed:
+    <form id="speedForm">
+        <input type="text" id="textSpeed" name="speed" placeholder="100" maxlength="3">
+        <button type="submit">Envoyer</button>
+    </form>
+    <br>
+    Brightness:
+    <form id="brightnessForm">
+        <input type="text" id="textBrightness" name="brightness" placeholder="0" maxlength="2">
+        <button type="submit">Envoyer</button>
+    </form>
 
     <script>
         document.getElementById('matrixForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
             // Récupération du texte
             const text = document.getElementById('textInput').value;
-            
             // Validation de la longueur
             if (text.length > 40 || text.trim() === '') {
                 alert("Veuillez entrer un texte entre 1 et 40 caractères");
                 return;
             }
-
             // Construction de l'URL
             const url = `/text/${encodeURIComponent(text)}`;
-            
             // Appel GET à l'API
             fetch(url, {
                 method: 'GET'
@@ -142,6 +151,58 @@ const char index_html[] PROGMEM = R"rawliteral(
                 resultDiv.innerHTML = `<strong>Réponse de l'API:</strong> ${data}`;
                 
                 // Masquer le résultat après 3 secondes
+                setTimeout(() => {
+                    resultDiv.innerHTML = '';
+                }, 3000);
+            })
+            .catch(error => {
+                alert("Erreur lors de la communication avec l'API: " + error.message);
+            });
+        });
+        
+        document.getElementById('speedForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const speed = document.getElementById('textSpeed').value;
+            const url = `/speed/${speed}`;
+            fetch(url, {
+                method: 'GET'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Erreur serveur');
+                }
+            })
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `<strong>Réponse de l'API:</strong> ${data}`;
+                setTimeout(() => {
+                    resultDiv.innerHTML = '';
+                }, 3000);
+            })
+            .catch(error => {
+                alert("Erreur lors de la communication avec l'API: " + error.message);
+            });
+        });
+
+        document.getElementById('brightnessForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const brightness = document.getElementById('textBrightness').value;
+            const url = `/brightness/${brightness}`;
+            fetch(url, {
+                method: 'GET'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Erreur serveur');
+                }
+            })
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `<strong>Réponse de l'API:</strong> ${data}`;
                 setTimeout(() => {
                     resultDiv.innerHTML = '';
                 }, 3000);
@@ -204,13 +265,28 @@ void setup() {
   Serial.println("WiFi connected..!");
   Serial.print("Got IP: ");  Serial.println(WiFi.localIP());
 
+  // Home page
   server.on(F("/"), []() {
     server.send(200, "text/html", index_html);
   });
-  
+
+  // Text
   server.on(UriBraces("/text/{}"), []() {
     string_text = urlDecode(server.pathArg(0).c_str());
     server.send(200, "text/plain", "Text: '" + string_text + "'");
+  });
+
+  // Speed
+  server.on(UriBraces("/speed/{}"), []() {
+    Speed = server.pathArg(0).toInt();
+    server.send(200, "text/plain", "Speed: "+ server.pathArg(0));
+  });
+  
+  // Brightness
+  server.on(UriBraces("/brightness/{}"), []() {
+    Brightness = server.pathArg(0).toInt();
+    if (Brightness>10) { Brightness = 10; }
+    server.send(200, "text/plain", "Brightness: "+ server.pathArg(0));
   });
 
   server.begin();
@@ -225,8 +301,9 @@ void setup() {
 void loop() {
   server.handleClient();
   if (myDisplay.displayAnimate()) {
+    myDisplay.setIntensity(Brightness);
     myDisplay.displayReset();
     const char *text = string_text.c_str();
-    myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_LEFT, 100);
+    myDisplay.displayScroll(text, PA_CENTER, PA_SCROLL_LEFT, Speed);
   }
 }
