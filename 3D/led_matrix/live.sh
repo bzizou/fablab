@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 IP=192.168.1.194
+LC_TIME=fr_FR.UTF-8
+FORTUNES=./sentences.txt
 
 urlencode() {
     # urlencode <string>
@@ -13,6 +15,7 @@ urlencode() {
         local c="${1:$i:1}"
         case $c in
             [a-zA-Z0-9.~_-]) printf '%s' "$c" ;;
+            \') printf '%%27';;
             *) printf '%%%02X' "'$c" ;;
         esac
     done
@@ -26,7 +29,7 @@ do
   curl http://$IP/speed/100 > /dev/null 2>&1
   curl http://$IP/text/HELLO > /dev/null 2>&1
   sleep 1
-  DATE=`date`
+  DATE=`date +"%a %d %b %Y - %H:%M"`
   URL=`urlencode "$DATE"`
   curl http://$IP/text/ > /dev/null 2>&1
   curl http://$IP/mode/10 > /dev/null 2>&1
@@ -38,8 +41,9 @@ do
   curl http://$IP/text/ > /dev/null 2>&1
   curl http://$IP/speed/20 > /dev/null 2>&1
   curl http://$IP/mode/1 > /dev/null 2>&1
-  URL=`urlencode "Warning Warning Warning Space invaders in approach!"`
+  FORTUNE=`shuf $FORTUNES |head -1`
+  URL=`urlencode "$FORTUNE"`
   curl http://$IP/text/$URL > /dev/null 2>&1
-  sleep 10
+  sleep 15
 done
 
