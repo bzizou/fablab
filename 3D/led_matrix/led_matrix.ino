@@ -25,6 +25,7 @@ int Speed=100;
 int Brightness=0;
 int Mode=1;
 int previousMode=Mode;
+bool Wait=false;
 
 String urlDecode(String encoded) {
     char decoded[encoded.length() * 2]; // Tableau pour stocker la chaîne décodée
@@ -323,6 +324,14 @@ void setup() {
     server.send(200, "text/plain", "Mode: "+ server.pathArg(0));
   });
 
+
+  // Mode
+  server.on(UriBraces("/wait/{}"), []() {
+    if (server.pathArg(0) == "true") { Wait=true; }
+    else { Wait=false; }
+    server.send(200, "text/plain", "Wait: "+ server.pathArg(0));
+  });
+
   server.begin();
   Serial.println("HTTP server started");
 
@@ -335,8 +344,10 @@ void setup() {
 void loop() {
   server.handleClient();
   myDisplay.setIntensity(Brightness);
-  myDisplay.setSpeed(Speed);
-  if (myDisplay.displayAnimate() || previousMode != Mode || previousText != string_text) {
+  if (Wait == false) {
+    myDisplay.setSpeed(Speed);
+  };
+  if (myDisplay.displayAnimate() || ((previousMode != Mode || previousText != string_text) && Wait==false)) {
     myDisplay.setIntensity(Brightness);
     myDisplay.displayReset();
     const char *text = string_text.c_str();
