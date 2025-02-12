@@ -14,9 +14,9 @@ WebServer server(80);
 #define HARDWARE_TYPE MD_MAX72XX::FC16_HW
 //define HARDWARE_TYPE MD_MAX72XX::GENERIC_HW
 #define MAX_DEVICES 16
-#define CS_PIN 15
-#define CLK_PIN 14
-#define DATA_PIN 2
+#define CS_PIN 5
+#define CLK_PIN 18
+#define DATA_PIN 19
 
 MD_Parola myDisplay = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 String string_text="ESP32";
