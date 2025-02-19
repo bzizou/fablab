@@ -6,6 +6,7 @@ from optparse import OptionParser
 import os
 from datetime import datetime
 import json
+import time
 
 # Window name
 window_name = "BMSO Allsky Cam"
@@ -52,14 +53,18 @@ parser.add_option("-B", "--blue",
 parser.add_option("-t", "--sensor_url",
                   dest="sensor_url", default="",
                   help="Get temperature from sensor (only bmp280 supported)")
+parser.add_option("-O", "--timeout",
+                  dest="timeout", default="10",
+                  help="Timeout in seconds")
 
 (options, args) = parser.parse_args()
 
 if options.url != "" :
-  stream = urllib.request.urlopen(options.url)
+  url=options.url
 else:
   # default stream url
-  stream = urllib.request.urlopen('http://192.168.1.205:80')
+  url="http://192.168.1.205:80'"
+stream = urllib.request.urlopen(url, timeout=int(options.timeout))
 n_dark_frames = int(options.n_darks)
 stack_size = int(options.stack_size)
 
@@ -98,7 +103,16 @@ bytes = bytes()
 f=0
 previous = False
 while True:
-    bytes += stream.read(1024)
+    while True:
+      try:
+        print("Aquiring...")
+        bytes += stream.read(1024)
+      except:
+        time.sleep(1)
+        print("An error occured getting the stream. Try reconnecting...")
+        stream = urllib.request.urlopen(url, timeout=int(options.timeout))
+        continue
+      break
     a = bytes.find(b'\xff\xd8')
     b = bytes.find(b'\xff\xd9')
     if a != -1 and b != -1:
@@ -199,3 +213,11 @@ while True:
             exit(0)
         if not options.dark and cv2.getWindowProperty(window_name, cv2.WND_PROP_AUTOSIZE) < 0 :
             exit(0)
+    else:
+        print("Unknown error. Bad format?")
+        time.sleep(1)
+        print("Reconnecting...")
+        try:
+          stream = urllib.request.urlopen(url, timeout=int(options.timeout))
+        except:
+          time.sleep(1)
