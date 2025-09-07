@@ -105,7 +105,7 @@ previous = False
 while True:
     while True:
       try:
-        print("Aquiring...")
+        #print("Aquiring...")
         bytes += stream.read(1024)
       except:
         time.sleep(1)
@@ -213,11 +213,3 @@ while True:
             exit(0)
         if not options.dark and cv2.getWindowProperty(window_name, cv2.WND_PROP_AUTOSIZE) < 0 :
             exit(0)
-    else:
-        print("Unknown error. Bad format?")
-        time.sleep(1)
-        print("Reconnecting...")
-        try:
-          stream = urllib.request.urlopen(url, timeout=int(options.timeout))
-        except:
-          time.sleep(1)

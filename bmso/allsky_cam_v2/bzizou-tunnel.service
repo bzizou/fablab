@@ -1,0 +1,15 @@
+[Unit]
+Descrption=BMSO tunnel
+
+[Service]
+User=bzizou
+ExecStart=/usr/local/sbin/bzizou_tunnel.sh
+ExecStop=/usr/local/sbin/bzizou_tunnel_stop.sh
+TimeoutSec=30
+Restart=on-failure
+RestartSec=10
+StartLimitInterval=350
+StartLimitBurst=10
+
+[Install]
+WantedBy=multi-user.target
